@@ -30,6 +30,7 @@ export function Video(props: IVideo.Props) {
   const playsInline = props.playsInline ?? true;
   const preload = props.preload ?? 'auto';
   const poster = props.poster;
+  const isPreventBackCurrentTime = props.isPreventBackCurrentTime ?? false;
   const elementId = useMemo(() => `id_${id}`, [id]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -98,9 +99,16 @@ export function Video(props: IVideo.Props) {
 
   useEffect(() => {
     if (currentTimeObj === undefined) return;
-    if (videoRef.current !== null) {
-      videoRef.current.currentTime = currentTimeObj.second;
+    if (videoRef.current === null) return;
+
+    if (isPreventBackCurrentTime === true) {
+      if (videoRef.current.currentTime > currentTimeObj.second) {
+        return;
+      }
     }
+    
+    videoRef.current.currentTime = currentTimeObj.second;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTimeObj]);
 
   return (

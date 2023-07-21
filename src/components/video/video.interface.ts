@@ -37,7 +37,6 @@ export declare namespace IVideo {
   export interface Props {
     id: string;
     className?: string;
-    // videoRef?: RefObject<HTMLVideoElement>;
     autoPlay?: boolean;
     controls?: boolean;
     crossOrigin?: CrossOrigin;
@@ -51,6 +50,8 @@ export declare namespace IVideo {
     poster?: string;
 
     currentTimeObj?: CurrentTimeObj;
+    /** 현재 currentTime 보다 이전으로 offset 이 이동하는 것을 막을 것인지에 대한 여부 입니다. (default: false) */
+    isPreventBackCurrentTime?: boolean;
 
     onPlay?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onCanPlay?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
