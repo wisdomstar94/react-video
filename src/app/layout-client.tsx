@@ -8,6 +8,7 @@ export default function RootLayoutClient() {
     { name: '/test/test1', href: '/test/test1' },
     { name: '/test/test2', href: '/test/test2' },
     { name: '/test/test3', href: '/test/test3' },
+    { name: '/test/test4', href: '/test/test4' },
   ]);
 
   return (

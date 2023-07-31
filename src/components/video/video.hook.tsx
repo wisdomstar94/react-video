@@ -20,6 +20,7 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
     onResume,
     onError,
     onTimeUpdate,
+    onNotLoadedData,
   } = props;
 
   const [isReadyed, setIsReadyed] = useState<boolean>(false);
@@ -314,6 +315,11 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
           onTimeUpdate={(event, diff) => {
             if (typeof onTimeUpdate === 'function') {
               onTimeUpdate(event, diff, id);
+            }
+          }}
+          onNotLoadedData={(id) => {
+            if (typeof onNotLoadedData === 'function') {
+              onNotLoadedData(id);
             }
           }}
           />

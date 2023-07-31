@@ -20,6 +20,7 @@ export function Video(props: IVideo.Props) {
     onPause,
     onResume,
     onTimeUpdate,
+    onNotLoadedData,
   } = props;
   const autoPlay = props.autoPlay ?? true;
   const controls = props.controls ?? false;
@@ -32,6 +33,7 @@ export function Video(props: IVideo.Props) {
   const poster = props.poster;
   const isPreventBackCurrentTime = props.isPreventBackCurrentTime ?? false;
   const elementId = useMemo(() => `id_${id}`, [id]);
+  const loadedInfo = useRef<IVideo.LoadedInfo>();
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -142,12 +144,28 @@ export function Video(props: IVideo.Props) {
           }
         }}
         onLoadedData={event => {
+          if (loadedInfo.current !== undefined) {
+            loadedInfo.current.loadedDataAt = Date.now();
+          }
           videoRef.current?.setAttribute('data-is-ready', 'true');
           if (typeof onLoadedData === 'function') {
             onLoadedData(event, id);
           }
         }}
         onLoadedMetadata={(event) => {
+          if (loadedInfo.current?.loadedDataCheckTimeout !== undefined) {
+            clearTimeout(loadedInfo.current?.loadedDataCheckTimeout);
+          }
+          loadedInfo.current = {
+            loadedMetaDataAt: Date.now(),
+            loadedDataAt: undefined,
+            loadedDataCheckTimeout: setTimeout(() => {
+              if (loadedInfo.current?.loadedDataAt === undefined) {
+                if (typeof onNotLoadedData === 'function') onNotLoadedData(id);
+              }
+            }, 3000),
+          };
+          
           if (typeof onLoadedMetadata === 'function') {
             onLoadedMetadata(event, id);
           }
