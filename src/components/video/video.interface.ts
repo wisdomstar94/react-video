@@ -9,6 +9,7 @@ export declare namespace IVideo {
     onMidPoint?: (id: string) => void;
     onThirdQuartile?: (id: string) => void;
     onComplete?: (id: string) => void;
+    onInvalidComplete?: (id: string) => void;
     onPause?: (id: string) => void;
     onResume?: (id: string) => void;
     onError?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
@@ -41,6 +42,11 @@ export declare namespace IVideo {
     loadedDataCheckTimeout?: NodeJS.Timeout;
   }
 
+  export interface TimeUpdateItem {
+    duration: number;
+    currentTime: number;
+  }
+
   export interface Props {
     id: string;
     className?: string;
@@ -67,6 +73,7 @@ export declare namespace IVideo {
     onMidPoint?: (id: string) => void;
     onThirdQuartile?: (id: string) => void;
     onComplete?: (id: string) => void;
+    onInvalidComplete?: (id: string) => void;
     onPause?: (id: string) => void;
     onResume?: (id: string) => void;
     onError?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;

@@ -14,6 +14,7 @@ export function Video(props: IVideo.Props) {
     onMidPoint,
     onThirdQuartile,
     onComplete,
+    onInvalidComplete,
     onError,
     onLoadedData,
     onLoadedMetadata,
@@ -34,6 +35,7 @@ export function Video(props: IVideo.Props) {
   const isPreventBackCurrentTime = props.isPreventBackCurrentTime ?? false;
   const elementId = useMemo(() => `id_${id}`, [id]);
   const loadedInfo = useRef<IVideo.LoadedInfo>();
+  const timeUpdateItems = useRef<IVideo.TimeUpdateItem[]>([]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -55,6 +57,13 @@ export function Video(props: IVideo.Props) {
       if (typeof onResume === 'function') onResume(id);
     }
   }, [getVideoElement, id, onPlay, onResume, onStart]);
+
+  function isValidTimeUpdateItems() {
+    if (timeUpdateItems.current.length <= 1) return false;
+    const target = timeUpdateItems.current.find(x => x.currentTime !== x.duration);
+    if (target === undefined) return false;
+    return true;
+  }
   
   function _onTimeUpdate(event: SyntheticEvent<HTMLVideoElement, Event>) {
     const video = getVideoElement();
@@ -62,6 +71,8 @@ export function Video(props: IVideo.Props) {
 
     const duration = video.duration;
     const currentTime = video.currentTime;
+    timeUpdateItems.current.push({ duration, currentTime });
+
     const currentProcessRate = (currentTime * 100) / duration;
 
     const catchTimePeriod = new Date().getTime() - prevCurrentTimeCatchTime.current;
@@ -72,20 +83,26 @@ export function Video(props: IVideo.Props) {
 
     if (currentProcessRate >= 25) {
       if (getVideoElement()?.getAttribute('data-is-first-quartile') !== 'true') {
-        getVideoElement()?.setAttribute('data-is-first-quartile', 'true');
-        if (typeof onFirstQuartile === 'function') onFirstQuartile(id);
+        if (isValidTimeUpdateItems()) {
+          getVideoElement()?.setAttribute('data-is-first-quartile', 'true');
+          if (typeof onFirstQuartile === 'function') onFirstQuartile(id);
+        }
       }
     }
     if (currentProcessRate >= 50) {
       if (getVideoElement()?.getAttribute('data-is-midpoint') !== 'true') {
-        getVideoElement()?.setAttribute('data-is-midpoint', 'true');
-        if (typeof onMidPoint === 'function') onMidPoint(id);
+        if (isValidTimeUpdateItems()) {
+          getVideoElement()?.setAttribute('data-is-midpoint', 'true');
+          if (typeof onMidPoint === 'function') onMidPoint(id);
+        }
       }
     }
     if (currentProcessRate >= 75) {
       if (getVideoElement()?.getAttribute('data-is-third-quartile') !== 'true') {
-        getVideoElement()?.setAttribute('data-is-third-quartile', 'true');
-        if (typeof onThirdQuartile === 'function') onThirdQuartile(id);
+        if (isValidTimeUpdateItems()) {
+          getVideoElement()?.setAttribute('data-is-third-quartile', 'true');
+          if (typeof onThirdQuartile === 'function') onThirdQuartile(id);
+        }
       }
     }
 
@@ -94,10 +111,14 @@ export function Video(props: IVideo.Props) {
 
   const onEnded = useCallback((event: SyntheticEvent<HTMLVideoElement, Event>) => {
     if (getVideoElement()?.getAttribute('data-is-complete') !== 'true') {
-      getVideoElement()?.setAttribute('data-is-complete', 'true');
-      if (typeof onComplete === 'function') onComplete(id);
+      if (isValidTimeUpdateItems()) {
+        getVideoElement()?.setAttribute('data-is-complete', 'true');
+        if (typeof onComplete === 'function') onComplete(id);
+      } else {
+        if (typeof onInvalidComplete === 'function') onInvalidComplete(id);
+      }
     }
-  }, [getVideoElement, id, onComplete]);
+  }, [getVideoElement, id, onComplete, onInvalidComplete]);
 
   useEffect(() => {
     if (currentTimeObj === undefined) return;

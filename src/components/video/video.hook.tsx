@@ -16,6 +16,7 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
     onMidPoint,
     onThirdQuartile,
     onComplete,
+    onInvalidComplete,
     onPause,
     onResume,
     onError,
@@ -305,6 +306,11 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
             setIsComplete(true);
             if (typeof onComplete === 'function') {
               onComplete(id);
+            }
+          }}
+          onInvalidComplete={() => {
+            if (typeof onInvalidComplete === 'function') {
+              onInvalidComplete(id);
             }
           }}
           onError={(event) => {
