@@ -22,6 +22,7 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
     onError,
     onTimeUpdate,
     onNotLoadedData,
+    onUnusualVideoStoped,
   } = props;
 
   const [isReadyed, setIsReadyed] = useState<boolean>(false);
@@ -326,6 +327,11 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
           onNotLoadedData={(id) => {
             if (typeof onNotLoadedData === 'function') {
               onNotLoadedData(id);
+            }
+          }}
+          onUnusualVideoStoped={(id) => {
+            if (typeof onUnusualVideoStoped === 'function') {
+              onUnusualVideoStoped(id);
             }
           }}
           />

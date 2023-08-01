@@ -17,6 +17,7 @@ export declare namespace IVideo {
     onLoadedMetadata?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onTimeUpdate?: (event: SyntheticEvent<HTMLVideoElement, Event>, catchTimePeriod: number, id: string) => void;
     onNotLoadedData?: (id: string) => void;
+    onUnusualVideoStoped?: (id: string) => void;
   }
 
   export interface SetVideoOptions {
@@ -45,6 +46,12 @@ export declare namespace IVideo {
   export interface TimeUpdateItem {
     duration: number;
     currentTime: number;
+    createdAt: number;
+  }
+
+  export interface TimeUpdateItemsCheckInfo {
+    interval?: NodeJS.Timer;
+    callback: () => void;
   }
 
   export interface Props {
@@ -81,6 +88,7 @@ export declare namespace IVideo {
     onLoadedMetadata?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onTimeUpdate?: (event: SyntheticEvent<HTMLVideoElement, Event>, catchTimePeriod: number, id: string) => void;
     onNotLoadedData?: (id: string) => void;
+    onUnusualVideoStoped?: (id: string) => void;
   }
 
   export interface VideoHook {
