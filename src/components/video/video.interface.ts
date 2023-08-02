@@ -48,10 +48,12 @@ export declare namespace IVideo {
     currentTime: number;
     createdAt: number;
     isReadyed: boolean;
+    isPaused?: boolean;
   }
 
   export interface TimeUpdateItemsCheckInfo {
     interval?: NodeJS.Timer;
+    isProcessing: boolean;
     callback: () => void;
   }
 
