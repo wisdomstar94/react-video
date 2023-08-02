@@ -37,6 +37,7 @@ export function Video(props: IVideo.Props) {
   const elementId = useMemo(() => `id_${id}`, [id]);
   const loadedInfo = useRef<IVideo.LoadedInfo>();
   const timeUpdateItems = useRef<IVideo.TimeUpdateItem[]>([]);
+  const isOnUnusualVideoStopedCalled = useRef<boolean>(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const timeUpdateItemsCheckInfo = useRef<IVideo.TimeUpdateItemsCheckInfo>({ isProcessing: false, callback: () => {} });
@@ -68,11 +69,12 @@ export function Video(props: IVideo.Props) {
         return false;
       };
 
-      if (isUnusualVideoStoped()) {
+      if (isUnusualVideoStoped() && isOnUnusualVideoStopedCalled.current === false) {
         // 비정삭적으로 영상이 멈춤..
         console.error(`[${dateNow}] [${id}] 영상이 비정상적으로 멈췄습니다.`);
         clearInterval(timeUpdateItemsCheckInfo.current.interval);
         timeUpdateItemsCheckInfo.current.isProcessing = false;
+        isOnUnusualVideoStopedCalled.current = true;
         if (typeof onUnusualVideoStoped === 'function') {
           onUnusualVideoStoped(id, latestItem);
         }
