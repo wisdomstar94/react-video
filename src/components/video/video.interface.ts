@@ -53,7 +53,6 @@ export declare namespace IVideo {
 
   export interface TimeUpdateItemsCheckInfo {
     interval?: NodeJS.Timer;
-    isProcessing: boolean;
     callback: () => void;
   }
 

@@ -37,49 +37,43 @@ export function Video(props: IVideo.Props) {
   const elementId = useMemo(() => `id_${id}`, [id]);
   const loadedInfo = useRef<IVideo.LoadedInfo>();
   const timeUpdateItems = useRef<IVideo.TimeUpdateItem[]>([]);
-  const isOnUnusualVideoStopedCalled = useRef<boolean>(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
-  const timeUpdateItemsCheckInfo = useRef<IVideo.TimeUpdateItemsCheckInfo>({ isProcessing: false, callback: () => {} });
-  timeUpdateItemsCheckInfo.current = {
-    isProcessing: false,
-    callback: () => {
-      const element = getVideoElement();
-      if (element === null) return;
-      if (element.paused === true || timeUpdateItems.current.find(x => x.duration !== x.currentTime) === undefined) {
-        return;
+  const timeUpdateItemsCheckInfo = useRef<IVideo.TimeUpdateItemsCheckInfo>({ callback: () => {} });
+  timeUpdateItemsCheckInfo.current.callback = () => {
+    const element = getVideoElement();
+    if (element === null) return;
+    if (element.paused === true || timeUpdateItems.current.find(x => x.duration !== x.currentTime) === undefined) {
+      return;
+    }
+    if (timeUpdateItems.current.length === 0) return;
+    const dateNow = new Date().getTime();
+    const readyedTimeUpdateItems = timeUpdateItems.current.filter(x => x.isReadyed);
+    if (readyedTimeUpdateItems.length === 0) return;
+    
+    const latestItem = (readyedTimeUpdateItems[readyedTimeUpdateItems.length - 1]);
+    if (latestItem.isPaused === true) return;
+
+    const duration = latestItem.duration;
+    const latestCurrentTime = latestItem.currentTime;
+    const latestCreatedAt = latestItem.createdAt;
+    const remainTime = duration - latestCurrentTime;
+
+    const isUnusualVideoStoped = () => {
+      if (Date.now() - 3000 > latestCreatedAt + (remainTime * 1000)) {
+        return true;
       }
-      if (timeUpdateItems.current.length === 0) return;
-      const dateNow = new Date().getTime();
-      const readyedTimeUpdateItems = timeUpdateItems.current.filter(x => x.isReadyed);
-      if (readyedTimeUpdateItems.length === 0) return;
-      
-      const latestItem = (readyedTimeUpdateItems[readyedTimeUpdateItems.length - 1]);
-      if (latestItem.isPaused === true) return;
+      return false;
+    };
 
-      const duration = latestItem.duration;
-      const latestCurrentTime = latestItem.currentTime;
-      const latestCreatedAt = latestItem.createdAt;
-      const remainTime = duration - latestCurrentTime;
-
-      const isUnusualVideoStoped = () => {
-        if (Date.now() - 3000 > latestCreatedAt + (remainTime * 1000)) {
-          return true;
-        }
-        return false;
-      };
-
-      if (isUnusualVideoStoped() && isOnUnusualVideoStopedCalled.current === false) {
-        // 비정삭적으로 영상이 멈춤..
-        console.error(`[${dateNow}] [${id}] 영상이 비정상적으로 멈췄습니다.`);
-        clearInterval(timeUpdateItemsCheckInfo.current.interval);
-        timeUpdateItemsCheckInfo.current.isProcessing = false;
-        isOnUnusualVideoStopedCalled.current = true;
-        if (typeof onUnusualVideoStoped === 'function') {
-          onUnusualVideoStoped(id, latestItem);
-        }
+    if (isUnusualVideoStoped()) {
+      // 비정삭적으로 영상이 멈춤..
+      console.error(`[${dateNow}] [${id}] 영상이 비정상적으로 멈췄습니다.`);
+      clearInterval(timeUpdateItemsCheckInfo.current.interval);
+      if (typeof onUnusualVideoStoped === 'function') {
+        onUnusualVideoStoped(id, latestItem);
       }
-    },
+    }
   };
 
   const prevCurrentTimeCatchTime = useRef<number>(new Date().getTime());
@@ -112,16 +106,6 @@ export function Video(props: IVideo.Props) {
     const video = getVideoElement();
     if (video === null) return;
 
-    // if (timeUpdateItemsCheckInfo.current.isProcessing === false) {
-    //   clearInterval(timeUpdateItemsCheckInfo.current.interval);
-    //   timeUpdateItemsCheckInfo.current.isProcessing = true;
-    //   console.log(`[${id}] set....`);
-    //   timeUpdateItemsCheckInfo.current.interval = setInterval(() => {
-    //     console.log(`[${id}] callback.?`);
-    //     timeUpdateItemsCheckInfo.current.callback();
-    //   }, 1000);
-    // }
-
     const duration = video.duration;
     const currentTime = video.currentTime;
     timeUpdateItems.current.push({ 
@@ -130,6 +114,14 @@ export function Video(props: IVideo.Props) {
       createdAt: new Date().getTime(), 
       isReadyed: video.getAttribute('data-is-start') === 'true',
     });
+
+    if (timeUpdateItemsCheckInfo.current.interval === undefined && video.getAttribute('data-is-start') === 'true') {
+      clearInterval(timeUpdateItemsCheckInfo.current.interval);
+      timeUpdateItemsCheckInfo.current.interval = setInterval(() => {
+        // console.log(`[${id}] callback called`);
+        timeUpdateItemsCheckInfo.current.callback();
+      }, 1000);
+    }
 
     const currentProcessRate = (currentTime * 100) / duration;
 
@@ -169,7 +161,7 @@ export function Video(props: IVideo.Props) {
 
   const onEnded = useCallback((event: SyntheticEvent<HTMLVideoElement, Event>) => {
     clearInterval(timeUpdateItemsCheckInfo.current.interval);
-    timeUpdateItemsCheckInfo.current.isProcessing = false;
+    timeUpdateItemsCheckInfo.current.interval = undefined;
 
     if (getVideoElement()?.getAttribute('data-is-complete') !== 'true') {
       if (isValidTimeUpdateItems()) {
@@ -197,16 +189,10 @@ export function Video(props: IVideo.Props) {
   }, [currentTimeObj]);
 
   useEffect(() => {
-    clearInterval(timeUpdateItemsCheckInfo.current.interval);
-    timeUpdateItemsCheckInfo.current.isProcessing = true;
-    timeUpdateItemsCheckInfo.current.interval = setInterval(() => {
-      // console.log(`[${id}] callback.?`);
-      timeUpdateItemsCheckInfo.current.callback();
-    }, 1000);
+    const _timeUpdateItemsCheckInfo = timeUpdateItemsCheckInfo.current;
 
     return () => {
-      clearInterval(timeUpdateItemsCheckInfo.current.interval);
-      timeUpdateItemsCheckInfo.current.isProcessing = false;
+      clearInterval(_timeUpdateItemsCheckInfo.interval);
     };
   }, [id]);
 
