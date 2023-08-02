@@ -47,6 +47,7 @@ export declare namespace IVideo {
     duration: number;
     currentTime: number;
     createdAt: number;
+    isReadyed: boolean;
   }
 
   export interface TimeUpdateItemsCheckInfo {

@@ -46,13 +46,15 @@ export function Video(props: IVideo.Props) {
       if (element === null) return;
       if (element.paused === true || timeUpdateItems.current.find(x => x.duration !== x.currentTime) === undefined) {
         clearInterval(timeUpdateItemsCheckInfo.current.interval);
-        timeUpdateItems.current = [];
+        // timeUpdateItems.current = [];
         timeUpdateItemsCheckInfo.current.interval = undefined;
         return;
       }
       if (timeUpdateItems.current.length === 0) return;
       const dateNow = new Date().getTime();
-      const latestCreatedAt = (timeUpdateItems.current[timeUpdateItems.current.length - 1]).createdAt;
+      const readyedTimeUpdateItems = timeUpdateItems.current.filter(x => x.isReadyed);
+      if (readyedTimeUpdateItems.length === 0) return;
+      const latestCreatedAt = (readyedTimeUpdateItems[readyedTimeUpdateItems.length - 1]).createdAt;
 
       if (element.paused === false && dateNow > latestCreatedAt) {
         if (dateNow - latestCreatedAt > 3000) {
@@ -105,9 +107,12 @@ export function Video(props: IVideo.Props) {
 
     const duration = video.duration;
     const currentTime = video.currentTime;
-    if (video.getAttribute('data-is-start') === 'true') {
-      timeUpdateItems.current.push({ duration, currentTime, createdAt: new Date().getTime() });
-    }
+    timeUpdateItems.current.push({ 
+      duration, 
+      currentTime, 
+      createdAt: new Date().getTime(), 
+      isReadyed: video.getAttribute('data-is-start') === 'true',
+    });
 
     const currentProcessRate = (currentTime * 100) / duration;
 
@@ -153,6 +158,7 @@ export function Video(props: IVideo.Props) {
         getVideoElement()?.setAttribute('data-is-complete', 'true');
         if (typeof onComplete === 'function') onComplete(id);
       } else {
+        console.log(`[${id}] @@timeUpdateItems.current`, timeUpdateItems.current);
         if (typeof onInvalidComplete === 'function') onInvalidComplete(id);
       }
     }
