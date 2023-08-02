@@ -17,7 +17,7 @@ export declare namespace IVideo {
     onLoadedMetadata?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onTimeUpdate?: (event: SyntheticEvent<HTMLVideoElement, Event>, catchTimePeriod: number, id: string) => void;
     onNotLoadedData?: (id: string) => void;
-    onUnusualVideoStoped?: (id: string) => void;
+    onUnusualVideoStoped?: (id: string, latestItem: TimeUpdateItem) => void;
   }
 
   export interface SetVideoOptions {
@@ -91,7 +91,7 @@ export declare namespace IVideo {
     onLoadedMetadata?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onTimeUpdate?: (event: SyntheticEvent<HTMLVideoElement, Event>, catchTimePeriod: number, id: string) => void;
     onNotLoadedData?: (id: string) => void;
-    onUnusualVideoStoped?: (id: string) => void;
+    onUnusualVideoStoped?: (id: string, latestItem: TimeUpdateItem) => void;
   }
 
   export interface VideoHook {

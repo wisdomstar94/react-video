@@ -329,9 +329,9 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
               onNotLoadedData(id);
             }
           }}
-          onUnusualVideoStoped={(id) => {
+          onUnusualVideoStoped={(id, latestItem) => {
             if (typeof onUnusualVideoStoped === 'function') {
-              onUnusualVideoStoped(id);
+              onUnusualVideoStoped(id, latestItem);
             }
           }}
           />

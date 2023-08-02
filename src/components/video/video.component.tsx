@@ -46,9 +46,6 @@ export function Video(props: IVideo.Props) {
       const element = getVideoElement();
       if (element === null) return;
       if (element.paused === true || timeUpdateItems.current.find(x => x.duration !== x.currentTime) === undefined) {
-        // clearInterval(timeUpdateItemsCheckInfo.current.interval);
-        // timeUpdateItemsCheckInfo.current.isProcessing = false;
-        // timeUpdateItemsCheckInfo.current.interval = undefined;
         return;
       }
       if (timeUpdateItems.current.length === 0) return;
@@ -64,13 +61,6 @@ export function Video(props: IVideo.Props) {
       const latestCreatedAt = latestItem.createdAt;
       const remainTime = duration - latestCurrentTime;
 
-      // console.log('...', {
-      //   duration,
-      //   latestCurrentTime,
-      //   latestCreatedAt,
-      //   remainTime,
-      // });
-
       const isUnusualVideoStoped = () => {
         if (Date.now() - 3000 > latestCreatedAt + (remainTime * 1000)) {
           return true;
@@ -84,7 +74,7 @@ export function Video(props: IVideo.Props) {
         clearInterval(timeUpdateItemsCheckInfo.current.interval);
         timeUpdateItemsCheckInfo.current.isProcessing = false;
         if (typeof onUnusualVideoStoped === 'function') {
-          onUnusualVideoStoped(id);
+          onUnusualVideoStoped(id, latestItem);
         }
       }
     },
