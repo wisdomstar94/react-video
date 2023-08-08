@@ -4,20 +4,36 @@ export declare namespace IVideo {
   export interface VideoHookProps {
     id: string;
     onCanPlay?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onCanPlayThrough?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onReady?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onStart?: (id: string) => void;
     onFirstQuartile?: (id: string) => void;
     onMidPoint?: (id: string) => void;
     onThirdQuartile?: (id: string) => void;
-    onComplete?: (id: string) => void;
+    onComplete?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onEnded?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onEndedAfter?: (id: string) => void;
     onInvalidComplete?: (id: string) => void;
-    onPause?: (id: string) => void;
-    onResume?: (id: string) => void;
+    onPause?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onResume?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onError?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onLoadedData?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onLoadedMetadata?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onTimeUpdate?: (event: SyntheticEvent<HTMLVideoElement, Event>, catchTimePeriod: number, id: string) => void;
     onNotLoadedData?: (id: string) => void;
     onUnusualVideoStoped?: (id: string, latestItem: TimeUpdateItem) => void;
+    onDurationChange?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onEmptied?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onLoadStart?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onPlaying?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onProgress?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onRateChange?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onSeeked?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onSeeking?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onStalled?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onSuspend?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onVolumeChange?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onWaiting?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
   }
 
   export interface SetVideoOptions {
@@ -77,20 +93,36 @@ export declare namespace IVideo {
 
     onPlay?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onCanPlay?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onCanPlayThrough?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onReady?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onStart?: (id: string) => void;
     onFirstQuartile?: (id: string) => void;
     onMidPoint?: (id: string) => void;
     onThirdQuartile?: (id: string) => void;
-    onComplete?: (id: string) => void;
+    onComplete?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onEnded?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onEndedAfter?: (id: string) => void;
     onInvalidComplete?: (id: string) => void;
-    onPause?: (id: string) => void;
-    onResume?: (id: string) => void;
+    onPause?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onResume?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onError?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onLoadedData?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onLoadedMetadata?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onTimeUpdate?: (event: SyntheticEvent<HTMLVideoElement, Event>, catchTimePeriod: number, id: string) => void;
     onNotLoadedData?: (id: string) => void;
     onUnusualVideoStoped?: (id: string, latestItem: TimeUpdateItem) => void;
+    onDurationChange?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onEmptied?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onLoadStart?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onPlaying?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onProgress?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onRateChange?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onSeeked?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onSeeking?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onStalled?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onSuspend?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onVolumeChange?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
+    onWaiting?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
   }
 
   export interface VideoHook {

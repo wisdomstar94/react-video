@@ -9,6 +9,8 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
   const {
     id,
     onCanPlay,
+    onCanPlayThrough,
+    onReady,
     onLoadedData,
     onLoadedMetadata,
     onStart,
@@ -16,6 +18,8 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
     onMidPoint,
     onThirdQuartile,
     onComplete,
+    onEnded,
+    onEndedAfter,
     onInvalidComplete,
     onPause,
     onResume,
@@ -23,6 +27,18 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
     onTimeUpdate,
     onNotLoadedData,
     onUnusualVideoStoped,
+    onDurationChange,
+    onEmptied,
+    onLoadStart,
+    onPlaying,
+    onProgress,
+    onRateChange,
+    onSeeked,
+    onSeeking,
+    onStalled,
+    onSuspend,
+    onVolumeChange,
+    onWaiting,
   } = props;
 
   const [isReadyed, setIsReadyed] = useState<boolean>(false);
@@ -249,64 +265,85 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
           playsInline={playsInline}
           src={src}
           poster={poster}
-          onPause={() => {
+          onPause={(event, id) => {
             setIsPause(true);
             setIsResume(false);
             if (typeof onPause === 'function') {
-              onPause(id);
+              onPause(event, id);
             }
           }}
-          onResume={() => {
+          onResume={(event, id) => {
             setIsResume(true);
             if (typeof onResume === 'function') {
-              onResume(id);
+              onResume(event, id);
             }
           }}
-          onLoadedData={(event) => {
+          onLoadedData={(event, id) => {
             setIsReady(true);
             setIsReadyed(true);
             if (typeof onLoadedData === 'function') {
               onLoadedData(event, id);
             }
           }}
-          onLoadedMetadata={(event) => {
+          onLoadedMetadata={(event, id) => {
             if (typeof onLoadedMetadata === 'function') {
               onLoadedMetadata(event, id);
             }
           }}
-          onCanPlay={(event) => {
+          onCanPlay={(event, id) => {
             if (typeof onCanPlay === 'function') {
               onCanPlay(event, id);
             }
           }}
-          onStart={() => {
+          onCanPlayThrough={(event, id) => {
+            if (typeof onCanPlayThrough === 'function') {
+              onCanPlayThrough(event, id);
+            }
+          }}
+          onReady={(event, id) => {
+            if (typeof onReady === 'function') {
+              onReady(event, id);
+            }
+          }}
+          onStart={(id) => {
             setIsStart(true);
             if (typeof onStart === 'function') {
               onStart(id);
             }
           }}
-          onFirstQuartile={() => {
+          onFirstQuartile={(id) => {
             setIsFirstQuartile(true);
             if (typeof onFirstQuartile === 'function') {
               onFirstQuartile(id);
             }
           }}
-          onMidPoint={() => {
+          onMidPoint={(id) => {
             setIsMidPoint(true);
             if (typeof onMidPoint === 'function') {
               onMidPoint(id);
             }
           }}
-          onThirdQuartile={() => {
+          onThirdQuartile={(id) => {
             setIsThirdQuartile(true);
             if (typeof onThirdQuartile === 'function') {
               onThirdQuartile(id);
             }
           }}
-          onComplete={() => {
+          onComplete={(event, id) => {
             setIsComplete(true);
             if (typeof onComplete === 'function') {
-              onComplete(id);
+              onComplete(event, id);
+            }
+          }}
+          onEnded={(event, id) => {
+            if (typeof onEnded === 'function') {
+              onEnded(event, id);
+            }
+          }}
+          onEndedAfter={(id) => {
+            setIsComplete(true);
+            if (typeof onEndedAfter === 'function') {
+              onEndedAfter(id);
             }
           }}
           onInvalidComplete={() => {
@@ -314,12 +351,12 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
               onInvalidComplete(id);
             }
           }}
-          onError={(event) => {
+          onError={(event, id) => {
             if (typeof onError === 'function') {
               onError(event, id);
             }
           }}
-          onTimeUpdate={(event, diff) => {
+          onTimeUpdate={(event, diff, id) => {
             if (typeof onTimeUpdate === 'function') {
               onTimeUpdate(event, diff, id);
             }
@@ -332,6 +369,66 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
           onUnusualVideoStoped={(id, latestItem) => {
             if (typeof onUnusualVideoStoped === 'function') {
               onUnusualVideoStoped(id, latestItem);
+            }
+          }}
+          onDurationChange={(event, id) => {
+            if (typeof onDurationChange === 'function') {
+              onDurationChange(event, id);
+            }
+          }}
+          onEmptied={(event, id) => {
+            if (typeof onEmptied === 'function') {
+              onEmptied(event, id);
+            }
+          }}
+          onLoadStart={(event, id) => {
+            if (typeof onLoadStart === 'function') {
+              onLoadStart(event, id);
+            }
+          }}
+          onPlaying={(event, id) => {
+            if (typeof onPlaying === 'function') {
+              onPlaying(event, id);
+            }
+          }}
+          onProgress={(event, id) => {
+            if (typeof onProgress === 'function') {
+              onProgress(event, id);
+            }
+          }}
+          onRateChange={(event, id) => {
+            if (typeof onRateChange === 'function') {
+              onRateChange(event, id);
+            }
+          }}
+          onSeeked={(event, id) => {
+            if (typeof onSeeked === 'function') {
+              onSeeked(event, id);
+            }
+          }}
+          onSeeking={(event, id) => {
+            if (typeof onSeeking === 'function') {
+              onSeeking(event, id);
+            }
+          }}
+          onStalled={(event, id) => {
+            if (typeof onStalled === 'function') {
+              onStalled(event, id);
+            }
+          }}
+          onSuspend={(event, id) => {
+            if (typeof onSuspend === 'function') {
+              onSuspend(event, id);
+            }
+          }}
+          onVolumeChange={(event, id) => {
+            if (typeof onVolumeChange === 'function') {
+              onVolumeChange(event, id);
+            }
+          }}
+          onWaiting={(event, id) => {
+            if (typeof onWaiting === 'function') {
+              onWaiting(event, id);
             }
           }}
           />

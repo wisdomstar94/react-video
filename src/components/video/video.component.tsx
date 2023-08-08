@@ -9,11 +9,15 @@ export function Video(props: IVideo.Props) {
     currentTimeObj,
     onPlay,
     onCanPlay,
+    onCanPlayThrough,
+    onReady,
     onStart,
     onFirstQuartile,
     onMidPoint,
     onThirdQuartile,
     onComplete,
+    onEnded,
+    onEndedAfter,
     onInvalidComplete,
     onError,
     onLoadedData,
@@ -23,6 +27,18 @@ export function Video(props: IVideo.Props) {
     onTimeUpdate,
     onNotLoadedData,
     onUnusualVideoStoped,
+    onDurationChange,
+    onEmptied,
+    onLoadStart,
+    onPlaying,
+    onProgress,
+    onRateChange,
+    onSeeked,
+    onSeeking,
+    onStalled,
+    onSuspend,
+    onVolumeChange,
+    onWaiting,
   } = props;
   const autoPlay = props.autoPlay ?? true;
   const controls = props.controls ?? false;
@@ -59,8 +75,18 @@ export function Video(props: IVideo.Props) {
     const latestCreatedAt = latestItem.createdAt;
     const remainTime = duration - latestCurrentTime;
 
+    // if (Date.now() - latestCreatedAt > 8000) {
+    //   return;
+    // }
+
+    // const isUnusualVideoStoped = () => {
+    //   if (Date.now() - 3000 > latestCreatedAt + (remainTime * 1000)) {
+    //     return true;
+    //   }
+    //   return false;
+    // };
     const isUnusualVideoStoped = () => {
-      if (Date.now() - 3000 > latestCreatedAt + (remainTime * 1000)) {
+      if (Date.now() - latestCreatedAt > 3000) {
         return true;
       }
       return false;
@@ -68,10 +94,17 @@ export function Video(props: IVideo.Props) {
 
     if (isUnusualVideoStoped()) {
       // 비정삭적으로 영상이 멈춤..
-      console.error(`[${dateNow}] [${id}] 영상이 비정상적으로 멈췄습니다.`);
+      // console.error(`[${dateNow}] [${id}] 영상이 비정상적으로 멈췄습니다.`);
       clearInterval(timeUpdateItemsCheckInfo.current.interval);
+      timeUpdateItemsCheckInfo.current.interval = undefined;
       if (typeof onUnusualVideoStoped === 'function') {
         onUnusualVideoStoped(id, latestItem);
+      }
+
+      if (element.ended === true) {
+        if (typeof onEndedAfter === 'function') {
+          onEndedAfter(id);
+        }
       }
     }
   };
@@ -87,11 +120,14 @@ export function Video(props: IVideo.Props) {
       onPlay(event, id);
     }
 
-    if (getVideoElement()?.getAttribute('data-is-start') !== 'true') {
-      getVideoElement()?.setAttribute('data-is-start', 'true');
+    const element = getVideoElement();
+    if (element?.getAttribute('data-is-start') !== 'true') {
+      element?.setAttribute('data-is-start', 'true');
+      element?.setAttribute('data-start-at', Date.now().toString());
+
       if (typeof onStart === 'function') onStart(id);
     } else {
-      if (typeof onResume === 'function') onResume(id);
+      if (typeof onResume === 'function') onResume(event, id);
     }
   }, [getVideoElement, id, onPlay, onResume, onStart]);
 
@@ -120,7 +156,7 @@ export function Video(props: IVideo.Props) {
       timeUpdateItemsCheckInfo.current.interval = setInterval(() => {
         // console.log(`[${id}] callback called`);
         timeUpdateItemsCheckInfo.current.callback();
-      }, 1000);
+      }, 200);
     }
 
     const currentProcessRate = (currentTime * 100) / duration;
@@ -159,20 +195,22 @@ export function Video(props: IVideo.Props) {
     prevCurrentTimeCatchTime.current = new Date().getTime();
   }
 
-  const onEnded = useCallback((event: SyntheticEvent<HTMLVideoElement, Event>) => {
+  const _onEnded = useCallback((event: SyntheticEvent<HTMLVideoElement, Event>) => {
+    if (typeof onEnded === 'function') onEnded(event, id);
+
     clearInterval(timeUpdateItemsCheckInfo.current.interval);
     timeUpdateItemsCheckInfo.current.interval = undefined;
 
     if (getVideoElement()?.getAttribute('data-is-complete') !== 'true') {
       if (isValidTimeUpdateItems()) {
         getVideoElement()?.setAttribute('data-is-complete', 'true');
-        if (typeof onComplete === 'function') onComplete(id);
+        if (typeof onComplete === 'function') onComplete(event, id);
       } else {
-        console.log(`[${id}] @@timeUpdateItems.current`, timeUpdateItems.current);
+        // console.log(`[${id}] @@timeUpdateItems.current`, timeUpdateItems.current);
         if (typeof onInvalidComplete === 'function') onInvalidComplete(id);
       }
     }
-  }, [getVideoElement, id, onComplete, onInvalidComplete]);
+  }, [getVideoElement, id, onComplete, onEnded, onInvalidComplete]);
 
   useEffect(() => {
     if (currentTimeObj === undefined) return;
@@ -193,6 +231,7 @@ export function Video(props: IVideo.Props) {
 
     return () => {
       clearInterval(_timeUpdateItemsCheckInfo.interval);
+      _timeUpdateItemsCheckInfo.interval = undefined;
     };
   }, [id]);
 
@@ -212,7 +251,7 @@ export function Video(props: IVideo.Props) {
         preload={preload}
         poster={poster}
         src={src}
-        onPause={() => {
+        onPause={(event) => {
           timeUpdateItems.current.push({
             createdAt: new Date().getTime(),
             currentTime: getVideoElement().currentTime ?? 0,
@@ -221,14 +260,22 @@ export function Video(props: IVideo.Props) {
             isPaused: true,
           });
 
-          if (typeof onPause === 'function') onPause(id);
+          if (typeof onPause === 'function') onPause(event, id);
         }}
         onCanPlay={(event) => {
           if (typeof onCanPlay === 'function') onCanPlay(event, id);
         }}
+        onCanPlayThrough={(event) => {
+          if (typeof onCanPlayThrough === 'function') onCanPlayThrough(event, id);
+
+          if (videoRef.current?.getAttribute('data-is-ready') !== 'true') {
+            videoRef.current?.setAttribute('data-is-ready', 'true');
+            if (typeof onReady === 'function') onReady(event, id);
+          }
+        }}
         onPlay={_onPlay}
         onTimeUpdate={_onTimeUpdate}
-        onEnded={onEnded}
+        onEnded={_onEnded}
         onError={(event) => {
           if (typeof onError === 'function') {
             onError(event, id);
@@ -238,7 +285,6 @@ export function Video(props: IVideo.Props) {
           if (loadedInfo.current !== undefined) {
             loadedInfo.current.loadedDataAt = Date.now();
           }
-          videoRef.current?.setAttribute('data-is-ready', 'true');
           if (typeof onLoadedData === 'function') {
             onLoadedData(event, id);
           }
@@ -259,6 +305,66 @@ export function Video(props: IVideo.Props) {
           
           if (typeof onLoadedMetadata === 'function') {
             onLoadedMetadata(event, id);
+          }
+        }}
+        onDurationChange={(event) => {
+          if (typeof onDurationChange === 'function') {
+            onDurationChange(event, id);
+          }
+        }}
+        onEmptied={(event) => {
+          if (typeof onEmptied === 'function') {
+            onEmptied(event, id);
+          }
+        }}
+        onLoadStart={(event) => {
+          if (typeof onLoadStart === 'function') {
+            onLoadStart(event, id);
+          }
+        }}
+        onPlaying={(event) => {
+          if (typeof onPlaying === 'function') {
+            onPlaying(event, id);
+          }
+        }}
+        onProgress={(event) => {
+          if (typeof onProgress === 'function') {
+            onProgress(event, id);
+          }
+        }}
+        onRateChange={(event) => {
+          if (typeof onRateChange === 'function') {
+            onRateChange(event, id);
+          }
+        }}
+        onSeeked={(event) => {
+          if (typeof onSeeked === 'function') {
+            onSeeked(event, id);
+          }
+        }}
+        onSeeking={(event) => {
+          if (typeof onSeeking === 'function') {
+            onSeeking(event, id);
+          }
+        }}
+        onStalled={(event) => {
+          if (typeof onStalled === 'function') {
+            onStalled(event, id);
+          }
+        }}
+        onSuspend={(event) => {
+          if (typeof onSuspend === 'function') {
+            onSuspend(event, id);
+          }
+        }}
+        onVolumeChange={(event) => {
+          if (typeof onVolumeChange === 'function') {
+            onVolumeChange(event, id);
+          }
+        }}
+        onWaiting={(event) => {
+          if (typeof onWaiting === 'function') {
+            onWaiting(event, id);
           }
         }}
         />
