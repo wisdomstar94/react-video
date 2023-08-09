@@ -53,6 +53,8 @@ export function Video(props: IVideo.Props) {
   const elementId = useMemo(() => `id_${id}`, [id]);
   const loadedInfo = useRef<IVideo.LoadedInfo>();
   const timeUpdateItems = useRef<IVideo.TimeUpdateItem[]>([]);
+  const onUnusualVideoStopedTimeout = useRef<NodeJS.Timeout>();
+  const prevSrc = useRef<string>();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const timeUpdateItemsCheckInfo = useRef<IVideo.TimeUpdateItemsCheckInfo>({ callback: () => {} });
@@ -63,7 +65,6 @@ export function Video(props: IVideo.Props) {
       return;
     }
     if (timeUpdateItems.current.length === 0) return;
-    const dateNow = new Date().getTime();
     const readyedTimeUpdateItems = timeUpdateItems.current.filter(x => x.isReadyed);
     if (readyedTimeUpdateItems.length === 0) return;
     
@@ -92,22 +93,44 @@ export function Video(props: IVideo.Props) {
       return false;
     };
 
+    clearTimeout(onUnusualVideoStopedTimeout.current);
+
     if (isUnusualVideoStoped()) {
       // 비정삭적으로 영상이 멈춤..
       // console.error(`[${dateNow}] [${id}] 영상이 비정상적으로 멈췄습니다.`);
       clearInterval(timeUpdateItemsCheckInfo.current.interval);
       timeUpdateItemsCheckInfo.current.interval = undefined;
-      if (typeof onUnusualVideoStoped === 'function') {
-        onUnusualVideoStoped(id, latestItem);
-      }
 
-      if (element.ended === true) {
+      if (element.ended === true) { // 영상이 끝까지 재생이 완료 되었는데 정지된 경우
         if (typeof onEndedAfter === 'function') {
           onEndedAfter(id);
         }
+      } else { // 영상이 재생 되는 도중에 정지된 경우 (영상이 끝까지 재생되지 않은채로 정지된 경우)
+        onUnusualVideoStopedTimeout.current = setTimeout(() => {
+          if (typeof onUnusualVideoStoped === 'function') {
+            onUnusualVideoStoped(id, latestItem);
+          }
+        }, 3000);
       }
     }
   };
+
+  if (prevSrc.current !== src || typeof src !== 'string') {
+    const videoElement = videoRef.current;
+    if (videoElement !== null) {
+      clearTimeout(onUnusualVideoStopedTimeout.current);
+      clearInterval(timeUpdateItemsCheckInfo.current.interval);
+      timeUpdateItemsCheckInfo.current.interval = undefined;
+      timeUpdateItems.current = [];
+      videoElement.removeAttribute('data-is-ready');
+      videoElement.removeAttribute('data-is-start');
+      videoElement.removeAttribute('data-start-at');
+      videoElement.removeAttribute('data-is-first-quartile');
+      videoElement.removeAttribute('data-is-midpoint');
+      videoElement.removeAttribute('data-is-third-quartile');
+      videoElement.removeAttribute('data-is-complete');
+    }
+  }
 
   const prevCurrentTimeCatchTime = useRef<number>(new Date().getTime());
 
@@ -198,6 +221,7 @@ export function Video(props: IVideo.Props) {
   const _onEnded = useCallback((event: SyntheticEvent<HTMLVideoElement, Event>) => {
     if (typeof onEnded === 'function') onEnded(event, id);
 
+    clearTimeout(onUnusualVideoStopedTimeout.current);
     clearInterval(timeUpdateItemsCheckInfo.current.interval);
     timeUpdateItemsCheckInfo.current.interval = undefined;
 
@@ -228,12 +252,18 @@ export function Video(props: IVideo.Props) {
 
   useEffect(() => {
     const _timeUpdateItemsCheckInfo = timeUpdateItemsCheckInfo.current;
+    const onUnusualVideoStopedTimeoutCurrent = onUnusualVideoStopedTimeout.current;
 
     return () => {
+      clearTimeout(onUnusualVideoStopedTimeoutCurrent);
       clearInterval(_timeUpdateItemsCheckInfo.interval);
       _timeUpdateItemsCheckInfo.interval = undefined;
     };
-  }, [id]);
+  }, []);
+
+  useEffect(() => {
+    prevSrc.current = src;
+  }, [src]);
 
   return (
     <>
