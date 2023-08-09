@@ -26,7 +26,7 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
     onError,
     onTimeUpdate,
     onNotLoadedData,
-    onUnusualVideoStoped,
+    onUnusualVideoStopped,
     onDurationChange,
     onEmptied,
     onLoadStart,
@@ -366,9 +366,9 @@ export function useVideo(props: IVideo.VideoHookProps): IVideo.VideoHook {
               onNotLoadedData(id);
             }
           }}
-          onUnusualVideoStoped={(id, latestItem) => {
-            if (typeof onUnusualVideoStoped === 'function') {
-              onUnusualVideoStoped(id, latestItem);
+          onUnusualVideoStopped={(id, latestItem) => {
+            if (typeof onUnusualVideoStopped === 'function') {
+              onUnusualVideoStopped(id, latestItem);
             }
           }}
           onDurationChange={(event, id) => {

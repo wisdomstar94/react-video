@@ -21,7 +21,7 @@ export declare namespace IVideo {
     onLoadedMetadata?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onTimeUpdate?: (event: SyntheticEvent<HTMLVideoElement, Event>, catchTimePeriod: number, id: string) => void;
     onNotLoadedData?: (id: string) => void;
-    onUnusualVideoStoped?: (id: string, latestItem: TimeUpdateItem) => void;
+    onUnusualVideoStopped?: (id: string, latestItem: TimeUpdateItem) => void;
     onDurationChange?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onEmptied?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onLoadStart?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
@@ -110,7 +110,7 @@ export declare namespace IVideo {
     onLoadedMetadata?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onTimeUpdate?: (event: SyntheticEvent<HTMLVideoElement, Event>, catchTimePeriod: number, id: string) => void;
     onNotLoadedData?: (id: string) => void;
-    onUnusualVideoStoped?: (id: string, latestItem: TimeUpdateItem) => void;
+    onUnusualVideoStopped?: (id: string, latestItem: TimeUpdateItem) => void;
     onDurationChange?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onEmptied?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;
     onLoadStart?: (event: SyntheticEvent<HTMLVideoElement, Event>, id: string) => void;

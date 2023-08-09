@@ -26,7 +26,7 @@ export function Video(props: IVideo.Props) {
     onResume,
     onTimeUpdate,
     onNotLoadedData,
-    onUnusualVideoStoped,
+    onUnusualVideoStopped,
     onDurationChange,
     onEmptied,
     onLoadStart,
@@ -53,7 +53,7 @@ export function Video(props: IVideo.Props) {
   const elementId = useMemo(() => `id_${id}`, [id]);
   const loadedInfo = useRef<IVideo.LoadedInfo>();
   const timeUpdateItems = useRef<IVideo.TimeUpdateItem[]>([]);
-  const onUnusualVideoStopedTimeout = useRef<NodeJS.Timeout>();
+  const onUnusualVideoStoppedTimeout = useRef<NodeJS.Timeout>();
   const prevSrc = useRef<string>();
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -93,7 +93,7 @@ export function Video(props: IVideo.Props) {
       return false;
     };
 
-    clearTimeout(onUnusualVideoStopedTimeout.current);
+    clearTimeout(onUnusualVideoStoppedTimeout.current);
 
     if (isUnusualVideoStoped()) {
       // 비정삭적으로 영상이 멈춤..
@@ -106,9 +106,9 @@ export function Video(props: IVideo.Props) {
           onEndedAfter(id);
         }
       } else { // 영상이 재생 되는 도중에 정지된 경우 (영상이 끝까지 재생되지 않은채로 정지된 경우)
-        onUnusualVideoStopedTimeout.current = setTimeout(() => {
-          if (typeof onUnusualVideoStoped === 'function') {
-            onUnusualVideoStoped(id, latestItem);
+        onUnusualVideoStoppedTimeout.current = setTimeout(() => {
+          if (typeof onUnusualVideoStopped === 'function') {
+            onUnusualVideoStopped(id, latestItem);
           }
         }, 3000);
       }
@@ -118,7 +118,7 @@ export function Video(props: IVideo.Props) {
   if (prevSrc.current !== src || typeof src !== 'string') {
     const videoElement = videoRef.current;
     if (videoElement !== null) {
-      clearTimeout(onUnusualVideoStopedTimeout.current);
+      clearTimeout(onUnusualVideoStoppedTimeout.current);
       clearInterval(timeUpdateItemsCheckInfo.current.interval);
       timeUpdateItemsCheckInfo.current.interval = undefined;
       timeUpdateItems.current = [];
@@ -221,7 +221,7 @@ export function Video(props: IVideo.Props) {
   const _onEnded = useCallback((event: SyntheticEvent<HTMLVideoElement, Event>) => {
     if (typeof onEnded === 'function') onEnded(event, id);
 
-    clearTimeout(onUnusualVideoStopedTimeout.current);
+    clearTimeout(onUnusualVideoStoppedTimeout.current);
     clearInterval(timeUpdateItemsCheckInfo.current.interval);
     timeUpdateItemsCheckInfo.current.interval = undefined;
 
@@ -252,10 +252,10 @@ export function Video(props: IVideo.Props) {
 
   useEffect(() => {
     const _timeUpdateItemsCheckInfo = timeUpdateItemsCheckInfo.current;
-    const onUnusualVideoStopedTimeoutCurrent = onUnusualVideoStopedTimeout.current;
+    const onUnusualVideoStoppedTimeoutCurrent = onUnusualVideoStoppedTimeout.current;
 
     return () => {
-      clearTimeout(onUnusualVideoStopedTimeoutCurrent);
+      clearTimeout(onUnusualVideoStoppedTimeoutCurrent);
       clearInterval(_timeUpdateItemsCheckInfo.interval);
       _timeUpdateItemsCheckInfo.interval = undefined;
     };

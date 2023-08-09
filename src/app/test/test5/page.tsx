@@ -58,9 +58,9 @@ export default function Page() {
           onInvalidComplete={(id) => {
             console.error('@onInvalidComplete', id);
           }}
-          onUnusualVideoStoped={(id, latestItem) => {
-            console.error('@onUnusualVideoStoped', id);
-            console.error(`@onUnusualVideoStoped ${id}.latestItem`, latestItem);
+          onUnusualVideoStopped={(id, latestItem) => {
+            console.error('@onUnusualVideoStopped', id);
+            console.error(`@onUnusualVideoStopped ${id}.latestItem`, latestItem);
           }}
           />
       </div>
