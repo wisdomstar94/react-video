@@ -1,6 +1,6 @@
 {
   "name": "@wisdomstar94/react-video",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "private": false,
   "scripts": {
     "dev": "next dev -p 3330",

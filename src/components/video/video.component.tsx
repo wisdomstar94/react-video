@@ -7,6 +7,7 @@ export function Video(props: IVideo.Props) {
     className,
     src,
     currentTimeObj,
+    style,
     onPlay,
     onCanPlay,
     onCanPlayThrough,
@@ -270,6 +271,7 @@ export function Video(props: IVideo.Props) {
       <video
         ref={videoRef}
         id={elementId}
+        style={style}
         className={className}
         autoPlay={autoPlay}
         controls={controls}

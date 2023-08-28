@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, SyntheticEvent } from "react";
+import { CSSProperties, Dispatch, SetStateAction, SyntheticEvent } from "react";
 
 export declare namespace IVideo {
   export interface VideoHookProps {
@@ -76,6 +76,7 @@ export declare namespace IVideo {
     id: string;
     className?: string;
     autoPlay?: boolean;
+    style?: CSSProperties;
     controls?: boolean;
     crossOrigin?: CrossOrigin;
     disablePictureInPicture?: boolean;
