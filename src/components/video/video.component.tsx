@@ -40,6 +40,7 @@ export function Video(props: IVideo.Props) {
     onSuspend,
     onVolumeChange,
     onWaiting,
+    videoSize,
   } = props;
   const autoPlay = props.autoPlay ?? true;
   const controls = props.controls ?? false;
@@ -283,6 +284,8 @@ export function Video(props: IVideo.Props) {
         preload={preload}
         poster={poster}
         src={src}
+        width={videoSize?.width}
+        height={videoSize?.height}
         onPause={(event) => {
           timeUpdateItems.current.push({
             createdAt: new Date().getTime(),

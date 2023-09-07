@@ -72,6 +72,11 @@ export declare namespace IVideo {
     callback: () => void;
   }
 
+  export interface VideoSize {
+    width?: number;
+    height?: number;
+  }
+
   export interface Props {
     id: string;
     className?: string;
@@ -87,6 +92,7 @@ export declare namespace IVideo {
     preload?: Preload;
     src?: string;
     poster?: string;
+    videoSize?: VideoSize;
 
     currentTimeObj?: CurrentTimeObj;
     /** 현재 currentTime 보다 이전으로 offset 이 이동하는 것을 막을 것인지에 대한 여부 입니다. (default: false) */
