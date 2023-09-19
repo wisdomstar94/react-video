@@ -68,7 +68,7 @@ export declare namespace IVideo {
   }
 
   export interface TimeUpdateItemsCheckInfo {
-    interval?: NodeJS.Timer;
+    interval?: NodeJS.Timeout;
     callback: () => void;
   }
 
