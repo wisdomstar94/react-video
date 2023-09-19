@@ -36,3 +36,4 @@ yarn-error.log*
 *.env
 .npmrc
 lib
+index.js

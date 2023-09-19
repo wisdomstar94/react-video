@@ -1,14 +1,12 @@
 {
   "name": "@wisdomstar94/react-video",
-  "version": "0.0.17-test.1",
+  "version": "0.0.17-test.2",
   "license": "MIT",
   "private": false,
   "scripts": {
     "dev": "next dev -p 3330",
-    "build": "node ./build.esbuild.js",
-    "build:tsc": "tsc --project ./tsconfig.package.json",
-    "next-build": "next build",
-    "next-start": "next start",
+    "build": "next build",
+    "start": "next start",
     "lint": "next lint",
     "pack:build": "node ./build.esbuild.js",
     "pack:build:tsc": "tsc --project ./tsconfig.package.json"
